@@ -1,0 +1,14 @@
+{
+  "title": "PostcodePulse",
+  "description": "Access precise UK postcode and address information with a user-friendly platform designed for public searches and business integrations, enhancing location intelligence.",
+  "icons": {
+    "icon": "/favicon.ico?v=2"
+  },
+  "robots": {
+    "index": true
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -1,0 +1,35 @@
+# Safety net when the vhost DocumentRoot points at the project root
+# instead of /public. Prefer setting DocumentRoot to /public on the server.
+#
+# CORS: Do NOT set Access-Control-* headers here (or in public/.htaccess).
+# Apache "Header always set" overwrites Laravel HandleCors and breaks preflight
+# for custom headers such as X-Environment and X-Organisation-Id.
+# Own CORS only in config/cors.php (allowed_headers => ['*']).
+#
+# Live subdomain (public_html/laravel_api/.htaccess) may also force HTTPS and
+# rewrite to public/ — still with zero Access-Control-* Header directives.
+
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "(?i)^(\.env|\.env\..*|composer\.(json|lock)|artisan|phpunit\.xml|auth\.json)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block hidden files (e.g. .env) and sensitive application directories.
+    RewriteRule (^|/)\. - [F]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor|node_modules)/ - [F,L]
+
+    # Serve existing files under public/ at the request path.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Route everything else through Laravel's front controller.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
